@@ -88,11 +88,11 @@ export function App() {
   }
 
   return (
-    <main className="space-shell">
-      <header className="space-header">
+    <main className="chat-ui-shell">
+      <header className="chat-ui-header">
         <div>
-          <p className="eyebrow">SPACE RUNTIME</p>
-          <h1>One space, many views.</h1>
+          <p className="eyebrow">CHAT UI RUNTIME</p>
+          <h1>One workspace, many views.</h1>
         </div>
         <div className="runtime-badge">
           <span className={status.running ? "status-dot is-live" : "status-dot"} />

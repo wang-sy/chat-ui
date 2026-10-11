@@ -196,5 +196,5 @@ fn main() {
             codex_status
         ])
         .run(tauri::generate_context!())
-        .expect("error while running Space");
+        .expect("error while running Chat UI");
 }

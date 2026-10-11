@@ -1,4 +1,4 @@
-# Space — Product Specification
+# Chat UI — Product Specification
 
 **Status:** Draft v0.1  
 **更新时间:** 2026-10-11  
@@ -6,7 +6,7 @@
 
 ## 1. 产品命题
 
-Space 是一个建立在 Codex 执行能力之上的可视化工作空间。
+Chat UI 是一个建立在 Codex 执行能力之上的可视化工作空间。
 
 用户不再面对一条不断增长的 chatbot 消息流，而是和一个 Main Thread 共同维护一个会持续变化的网页空间。Main Thread 负责理解用户意图、调度其他 Thread，并根据当前任务动态生成最合适的交互形态。
 
@@ -17,7 +17,7 @@ Space 是一个建立在 Codex 执行能力之上的可视化工作空间。
 ## 2. 核心关系
 
 ```text
-Space Runtime
+Chat UI Runtime
 └── Main Page
     └── Main Thread
         ├── View Page A ← View Thread A
@@ -27,7 +27,7 @@ Space Runtime
 
 第一版采用以下关系：
 
-- 一个 Space 只有一个 Main Thread；
+- 一个 Chat UI 只有一个 Main Thread；
 - 一个 View 默认只由一个 View Thread 负责；
 - Main Thread 可以创建、调度、暂停、恢复和关闭 View Thread；
 - Main Thread 管理所有 View 的布局、关系和显示状态；
@@ -37,9 +37,9 @@ Space Runtime
 
 ## 3. 核心概念
 
-### 3.1 Space
+### 3.1 Chat UI
 
-Space 是项目级的持续工作容器，保存：
+Chat UI 是项目级的持续工作容器，保存：
 
 - 一个 Main Thread；
 - 当前主页面；
@@ -48,7 +48,7 @@ Space 是项目级的持续工作容器，保存：
 - 事件、决策和版本；
 - 共享上下文和产出物。
 
-Space 不是一个固定的 dashboard。它只提供最小运行时，让 Main Thread 可以生成和组织页面。
+Chat UI 不是一个固定的 dashboard。它只提供最小运行时，让 Main Thread 可以生成和组织页面。
 
 ### 3.2 Main Thread
 
@@ -106,7 +106,7 @@ View 可以呈现为：
 - 对照方案；
 - 任意适合当前任务的网页交互形态。
 
-iframe 是第一版的隔离和承载方式。更本质的概念是“由 Thread 生成并由 Space 组合的网页 View”。
+iframe 是第一版的隔离和承载方式。更本质的概念是“由 Thread 生成并由 Chat UI 组合的网页 View”。
 
 ### 3.5 Main Page
 
@@ -145,7 +145,7 @@ Main Thread 重新组织 Main Page
 
 用户不需要逐条阅读所有 Thread 的文字输出。默认只需要看到：
 
-- 当前空间正在做什么；
+- 当前工作区正在做什么；
 - 哪些 View 有变化；
 - 哪些 View 正在工作；
 - 哪些地方需要用户判断；
@@ -193,16 +193,16 @@ view.artifact_created
 view.request_focus
 view.error
 
-space.mount_view
-space.resize_view
-space.collapse_view
-space.expand_view
-space.connect_views
-space.focus_view
-space.route_action
+chat_ui.mount_view
+chat_ui.resize_view
+chat_ui.collapse_view
+chat_ui.expand_view
+chat_ui.connect_views
+chat_ui.focus_view
+chat_ui.route_action
 ```
 
-iframe 之间不直接通信。所有跨 View 的关系和操作都通过 Space Runtime 与 Main Thread 进行路由。
+iframe 之间不直接通信。所有跨 View 的关系和操作都通过 Chat UI Runtime 与 Main Thread 进行路由。
 
 ## 7. 结构化输出
 
@@ -221,10 +221,10 @@ evidence      修改依据来自哪里
 
 ## 8. 设计原则
 
-1. **Space 是动态网页，不是固定 dashboard。**
+1. **Chat UI 是动态网页，不是固定 dashboard。**
 2. **Main Thread 管理全局组合，View Thread 管理局部网页。**
 3. **每个视觉状态都应该可以追溯到 Thread、文件、事件或决定。**
-4. **View 的内部实现可以复杂，Space 的全局交互必须保持简单。**
+4. **View 的内部实现可以复杂，Chat UI 的全局交互必须保持简单。**
 5. **用户通过观察和操作空间推进工作，不需要逐条阅读模型输出。**
 6. **所有重要变化都应当可比较、可确认、可撤销。**
 7. **iframe 是实现手段，网页 View 才是产品对象。**
@@ -245,7 +245,7 @@ evidence      修改依据来自哪里
 
 第一版只验证空间关系和交互方式：
 
-- 一个 Space；
+- 一个 Chat UI；
 - 一个 Main Thread；
 - 一个由 Main Thread 管理的主画板；
 - 三个 View Thread；
@@ -258,12 +258,12 @@ evidence      修改依据来自哪里
 
 ## 11. 需要继续决定的问题
 
-- Main Page 允许由 Main Thread 自由重写，Space Runtime 只保留一个极薄的运行时壳；
+- Main Page 允许由 Main Thread 自由重写，Chat UI Runtime 只保留一个极薄的运行时壳；
 - View 的布局是否完全自由，还是保留少量可预测的布局约束；
 - 用户是否可以直接对某个 View Thread 输入；
 - View 是否可以在不创建 Thread 的情况下存在；
 - iframe 之外是否需要支持同源页面或 Web Component；
-- Space 的状态和 View 文件落在项目内的 `.space/` 目录；
+- Chat UI 的状态和 View 文件落在项目内的 `.space/` 目录；`.space/` 是当前版本的持久化目录名。
 - Main Thread 如何判断应该创建 View、更新 View，还是直接回复用户。
 
 ## 12. 实现基线
@@ -272,7 +272,7 @@ evidence      修改依据来自哪里
 
 ```text
 Tauri 2
-  ├── React + TypeScript + Vite：Space 宿主界面
+  ├── React + TypeScript + Vite：Chat UI 宿主界面
   ├── Rust Bridge：文件、进程、事件和权限
   ├── 本机 Codex app-server：Main Thread 与 View Thread
   └── iframe：Main Page 与各个 View
@@ -282,7 +282,7 @@ Tauri 2
 
 - 第一版同时考虑 Windows、macOS 和 Linux 的 WebView 差异；
 - 开发阶段连接用户本机已有的 Codex，不把 Codex runtime 直接打进首个安装包；
-- 一个 Space 启动并管理一个 app-server 会话，维护一个 Main Thread 和多个 View Thread；
+- 一个 Chat UI 启动并管理一个 app-server 会话，维护一个 Main Thread 和多个 View Thread；
 - 页面与状态保存在项目内的 `.space/`，其中每个 View 使用独立的网页文件；
 - 宿主只提供加载、生命周期、布局事件和受控 Bridge，不把 Main Page 固定成 dashboard；
 - Main Page 与 View 使用结构化事件和受控消息通信，不能直接访问 Rust、文件系统或其他 View；

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Space",
+  "productName": "Chat UI",
   "version": "0.1.0",
-  "identifier": "com.space.app",
+  "identifier": "com.chatui.desktop",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Space",
+        "title": "Chat UI",
         "width": 1440,
         "height": 900,
         "minWidth": 960,

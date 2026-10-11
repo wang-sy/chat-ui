@@ -31,13 +31,13 @@ button:disabled {
   opacity: 0.42;
 }
 
-.space-shell {
+.chat-ui-shell {
   width: min(1180px, calc(100% - 48px));
   margin: 0 auto;
   padding: 34px 0 58px;
 }
 
-.space-header,
+.chat-ui-header,
 .surface-toolbar,
 .bridge-heading,
 .bridge-controls,
@@ -46,13 +46,13 @@ button:disabled {
   align-items: center;
 }
 
-.space-header,
+.chat-ui-header,
 .surface-toolbar,
 .bridge-heading {
   justify-content: space-between;
 }
 
-.space-header {
+.chat-ui-header {
   margin-bottom: 26px;
 }
 
@@ -259,12 +259,12 @@ h2 {
 }
 
 @media (max-width: 720px) {
-  .space-shell {
+  .chat-ui-shell {
     width: min(100% - 28px, 560px);
     padding-top: 22px;
   }
 
-  .space-header {
+  .chat-ui-header {
     align-items: flex-start;
     flex-direction: column;
     gap: 16px;
