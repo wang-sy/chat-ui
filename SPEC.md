@@ -253,8 +253,7 @@ evidence      修改依据来自哪里
 - View 可以被移动、折叠、展开和聚焦；
 - Main Thread 可以在 View 之间绘制连接；
 - 底部只有一个向 Main Thread 输入意图的入口；
-- 使用模拟状态展示 Thread 同时工作；
-- 视觉原型阶段暂时不接真实 Codex API，先验证信息架构和交互感觉；运行时骨架在第 12 节单独定义。
+- 视觉原型使用真实的本机 Codex 连接状态；View 编排和网页产出仍按后续阶段逐步接入。
 
 ## 11. 需要继续决定的问题
 
@@ -268,22 +267,42 @@ evidence      修改依据来自哪里
 
 ## 12. 实现基线
 
-当前实现采用跨平台优先的桌面架构：
+当前实现采用跨平台优先的本地服务架构：
 
 ```text
+本地 Chat UI Service（Rust）: 127.0.0.1:4317
+  ├── 本机 Codex app-server：单一共享线程运行时
+  ├── HTTP JSON API：浏览器端和 Tauri 端共用
+  ├── 项目目录与 .space/chat-ui.json：线程消息和项目状态
+  └── React + TypeScript + Vite：Codex 风格的界面
 Tauri 2
-  ├── React + TypeScript + Vite：Chat UI 宿主界面
-  ├── Rust Bridge：文件、进程、事件和权限
-  ├── 本机 Codex app-server：Main Thread 与 View Thread
-  └── iframe：Main Page 与各个 View
+  └── 启动本地服务并承载 React UI
 ```
 
 实现约束：
 
 - 第一版同时考虑 Windows、macOS 和 Linux 的 WebView 差异；
-- 开发阶段连接用户本机已有的 Codex，不把 Codex runtime 直接打进首个安装包；
-- 一个 Chat UI 启动并管理一个 app-server 会话，维护一个 Main Thread 和多个 View Thread；
-- 页面与状态保存在项目内的 `.space/`，其中每个 View 使用独立的网页文件；
-- 宿主只提供加载、生命周期、布局事件和受控 Bridge，不把 Main Page 固定成 dashboard；
-- Main Page 与 View 使用结构化事件和受控消息通信，不能直接访问 Rust、文件系统或其他 View；
-- 第一阶段的运行时验收链路是：用户输入 → Main Thread → 创建 View Thread → 生成网页 → iframe 显示并更新。
+- Chat UI 只使用用户本机已有的 Codex，不把 Codex runtime 直接打进安装包；
+- Rust 服务启动后自动扫描当前进程的 `PATH`，查找 `codex`、Windows 下的 `codex.exe`、`codex.cmd` 或 `codex.bat`；找不到时在界面提示用户安装或配置 PATH，不要求填写可执行文件路径；
+- 一个本地服务只管理一个 Codex app-server 子进程。浏览器和 Tauri UI 连接同一个服务，因此看到同一组项目、聊天和活动状态；
+- Tauri 启动时自动拉起服务；浏览器开发命令 `pnpm dev` 在需要时拉起同一个服务。关闭 UI 时只结束由当前开发进程启动的服务；
+- 项目清单保存在用户目录的 `.chat-ui/projects.json`，每个项目的聊天状态保存在项目内 `.space/chat-ui.json`，便于透明查看和 Git 管理；
+- 宿主只提供目录选择、线程生命周期、权限请求和受控 Bridge，不把 Main Page 固定成 dashboard；
+- View 编排协议保留在产品层，当前版本先把 Main Thread 的共享本地线程和 Codex 风格聊天入口跑通。
+
+## 13. 本地线程与服务协议
+
+本地服务监听 `127.0.0.1:4317`，启动后通过 `GET /health` 返回一次性服务 token。浏览器端和 Tauri 端都使用 `X-Chat-UI-Token` 访问以下接口：
+
+| 接口 | 作用 |
+| --- | --- |
+| `GET /api/state` | 返回连接状态、模型、项目、聊天和活动请求 |
+| `POST /api/connect` | 自动发现 PATH 中的 Codex 并启动 app-server |
+| `GET /api/directories` | 浏览本机目录，供 landing page 选择项目 |
+| `POST /api/projects` | 添加或选中项目目录 |
+| `POST /api/chats/send` | 创建或恢复线程并开始一轮 Codex turn |
+| `POST /api/chats/open` | 恢复已有线程和消息 |
+| `POST /api/chats/interrupt` | 中断正在运行的 turn |
+| `POST /api/requests/reply` | 回复 Codex 的权限确认或用户输入请求 |
+
+线程生命周期为：选择目录 → 首次发送时调用 `thread/start` → 后续消息复用同一个 `threadId` → 服务转发 app-server 的增量消息和请求 → UI 轮询共享状态。Tauri 和浏览器不会各自创建 Codex 线程，也不会复制一套独立的对话状态。

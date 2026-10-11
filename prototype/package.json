@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1 --port 1420",
+    "dev": "node scripts/dev.mjs",
+    "dev:ui": "vite --host 127.0.0.1 --port 1420",
+    "bridge": "node scripts/service.mjs",
     "build": "tsc --noEmit && vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
     "test": "node --test tests/bridge.test.mjs tests/sites-worker.test.mjs",
@@ -14,6 +16,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@tauri-apps/api": "2.12.3",
     "@vitejs/plugin-react": "5.0.4",
     "react": "19.2.0",

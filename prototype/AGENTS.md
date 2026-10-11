@@ -7,3 +7,10 @@ Before making substantial visual changes, use the Product Design plugin's `get-c
 When implementing from a selected generated mock, treat that image as the source of truth for layout, component anatomy, density, spacing, color, typography, visible content, and hierarchy.
 
 Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
+
+## Product decisions
+
+- Use a restrained Codex-style shell: a project/recent-chat sidebar, generous white space, and a bottom composer. The landing page only needs directory selection, model selection, and message entry; do not expose JSON-RPC logs or manual executable-path controls in normal UI.
+- Detect Codex automatically from PATH and show an actionable notice if it is missing.
+- The browser and Tauri window share one local Rust service and the same Codex thread state. The installed service also serves the browser UI; it must work without a Vite development server.
+- Keep Codex external to the installer to preserve the small package size. Persist project data under `.space/`.

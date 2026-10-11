@@ -9,12 +9,13 @@ export default defineConfig({
     include: ["react", "react-dom/client"],
   },
   server: {
-    host: "0.0.0.0",
+    host: "127.0.0.1",
     port: 1420,
     strictPort: true,
-    allowedHosts: ["terminal.local"],
+    allowedHosts: ["localhost", "127.0.0.1", "terminal.local"],
+    watch: { ignored: ["**/src-tauri/**", "**/.space/**"] },
     warmup: {
-      clientFiles: ["./src/main.jsx"],
+      clientFiles: ["./src/main.tsx"],
     },
   },
   plugins: [react()],
