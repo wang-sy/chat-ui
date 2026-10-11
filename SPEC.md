@@ -241,7 +241,7 @@ evidence      修改依据来自哪里
 - 为每个简单状态都创建一个完整 iframe；
 - 展示模型内部的完整隐式推理过程。
 
-## 10. 第一版原型范围
+## 10. 第一版视觉原型范围
 
 第一版只验证空间关系和交互方式：
 
@@ -254,14 +254,36 @@ evidence      修改依据来自哪里
 - Main Thread 可以在 View 之间绘制连接；
 - 底部只有一个向 Main Thread 输入意图的入口；
 - 使用模拟状态展示 Thread 同时工作；
-- 暂时不接真实 Codex API，先验证信息架构和交互感觉。
+- 视觉原型阶段暂时不接真实 Codex API，先验证信息架构和交互感觉；运行时骨架在第 12 节单独定义。
 
 ## 11. 需要继续决定的问题
 
-- Main Page 是否允许完全由 Main Thread 重写，还是保留一个极薄的运行时壳；
+- Main Page 允许由 Main Thread 自由重写，Space Runtime 只保留一个极薄的运行时壳；
 - View 的布局是否完全自由，还是保留少量可预测的布局约束；
 - 用户是否可以直接对某个 View Thread 输入；
 - View 是否可以在不创建 Thread 的情况下存在；
 - iframe 之外是否需要支持同源页面或 Web Component；
-- Space 的状态和 View 文件如何持久化；
+- Space 的状态和 View 文件落在项目内的 `.space/` 目录；
 - Main Thread 如何判断应该创建 View、更新 View，还是直接回复用户。
+
+## 12. 实现基线
+
+当前实现采用跨平台优先的桌面架构：
+
+```text
+Tauri 2
+  ├── React + TypeScript + Vite：Space 宿主界面
+  ├── Rust Bridge：文件、进程、事件和权限
+  ├── 本机 Codex app-server：Main Thread 与 View Thread
+  └── iframe：Main Page 与各个 View
+```
+
+实现约束：
+
+- 第一版同时考虑 Windows、macOS 和 Linux 的 WebView 差异；
+- 开发阶段连接用户本机已有的 Codex，不把 Codex runtime 直接打进首个安装包；
+- 一个 Space 启动并管理一个 app-server 会话，维护一个 Main Thread 和多个 View Thread；
+- 页面与状态保存在项目内的 `.space/`，其中每个 View 使用独立的网页文件；
+- 宿主只提供加载、生命周期、布局事件和受控 Bridge，不把 Main Page 固定成 dashboard；
+- Main Page 与 View 使用结构化事件和受控消息通信，不能直接访问 Rust、文件系统或其他 View；
+- 第一阶段的运行时验收链路是：用户输入 → Main Thread → 创建 View Thread → 生成网页 → iframe 显示并更新。

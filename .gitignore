@@ -5,6 +5,7 @@
 **/node_modules/
 **/dist/
 **/build/
+**/target/
 **/.vite/
 
 # Local environment and editor files.
