@@ -7,6 +7,9 @@
     "dev": "vite --host 127.0.0.1 --port 1420",
     "build": "tsc --noEmit && vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
+    "test": "node --test tests/bridge.test.mjs tests/sites-worker.test.mjs",
+    "test:bridge": "node --test tests/bridge.test.mjs",
+    "test:codex": "node --test tests/codex.integration.mjs",
     "test:sites": "node --test tests/sites-worker.test.mjs",
     "tauri": "tauri"
   },
