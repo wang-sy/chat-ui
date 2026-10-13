@@ -1,6 +1,6 @@
 # Chat UI
 
-Chat UI is a Codex-style local workspace. One Rust service owns one local Codex app-server session, while the browser and Tauri desktop window use the same projects, chats, thread IDs, approvals, and streaming state.
+Chat UI is a local visual workspace powered by Codex. One Rust service owns one local Codex app-server session, while the browser and Tauri desktop window use the same projects, Spaces, chats, thread IDs, approvals, and streaming state.
 
 ## Run locally
 
@@ -37,3 +37,10 @@ pnpm tauri build
 The Windows application is written to `prototype/src-tauri/target/release/chat-ui.exe`. Project registration is stored in the user `.chat-ui` directory; each project keeps its chat state in `.space/chat-ui.json`.
 
 See [SPEC.md](SPEC.md) for the product model and local thread protocol.
+See [CODEX_CAPABILITIES.md](CODEX_CAPABILITIES.md) for the app-server capability matrix and integration boundaries.
+
+## Workspace model
+
+The browser opens a project-level Space rather than a message-only screen. The Space contains one Main Thread and a registry of isolated View pages. Main Thread turns return a complete composition plan (`mainPage`, `views`, `connections`, and explicit `removeViews`); the Rust runtime turns that plan into child View Threads and persists the generated Main Page and each View below `.space/main/` and `.space/views/<view-id>/`. The UI presents one page surface at a time: the project opens Main Page, while selecting a View Thread swaps that surface to the View page. A compact bottom conversation dock keeps pending messages visible and expands for the active thread's approvals, streamed output and errors.
+
+Space state is stored in the selected project's `.space/space.json`; thread messages remain in `.space/chat-ui.json`. The service is the only owner of these files, so browser and Tauri clients observe the same workspace.

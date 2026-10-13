@@ -1,0 +1,12 @@
+[
+  {"id":"C01","title":"普通问答","prompt":"解释推荐系统中召回和排序的区别，给一个小例子。只需要回答问题，不要创建或修改页面和 View。"},
+  {"id":"C02","title":"推荐工作台","prompt":"做一个推荐系统工作台。Main Page 默认展开内嵌全部 View，可独立折叠；创建 architecture（架构图）和 metrics（指标页）两个独立 View。架构用可点击的召回、排序、展示节点，点击节点显示解释；指标页用明确标为示例的7天数据，切换指标时更新数字和图表。每个 View 使用自包含 HTML。主页面用 chat-view 嵌入两个真实子页面，并展示架构与指标的观测关系，不复制子页面 HTML。"},
+  {"id":"C03","title":"定向更新","prompt":"创建一个推荐工作台：Main Page 总览，以及 architecture（架构）和 metrics（指标）两个独立 View。架构页画召回到排序到展示的流程。指标页展示明确标为示例的7天 CTR 数据和可切换指标。后续会只修改指标页，请使用这些稳定的 ID。"},
+  {"id":"C04","title":"页面事件","prompt":"创建一个 architecture View，标题为排序服务，Main Page 为简洁总览。View 显示三个可点击服务节点与右侧详情。节点【排序服务】点击后立即显示该节点说明，并发送父级消息 {type:'chat-ui:view-event', event:'action', payload:{intent:'解释排序服务', node:'ranking'}}。每次只发送一次。后续收到该页面事件时，由所属 View Thread 更新自己的页面，显示更详细的排序职责，保留按钮。"},
+  {"id":"C05","title":"删除重排","prompt":"创建方案评估页面：Main Page 总览，两个 View：old-plan（旧方案）、result（结果方案）。旧方案展示三条明确标为示例的缺点，结果方案展示改进建议和一个可切换的对比表。建立 old-plan 到 result 的关系。不要创建其他 View。"},
+  {"id":"C06","title":"并行交付","prompt":"创建三个独立 View：overview（总览）、metrics（指标）、slow-detail（慢速详情），Main Page 默认展开内嵌这三个完整 View，使用 chat-view，支持独立折叠，不能只做入口或简介。总览与指标页尽快生成可交互页面。为了验证并行交付，将这条要求原样写进 slow-detail 的 brief：请先用命令 sleep 25 执行一次25秒的受控等待，再生成详情页，等待期间不要操作其他文件。每页都有一个可点击切换详情的按钮。只创建这三个 View。"},
+  {"id":"C07","title":"运行中排队","prompt":"创建一个独立 queue-demo View 和简洁 Main Page。View 是任务清单，含添加、完成、筛选按钮，使用示例数据。保留稳定 ID queue-demo，后续会对该页持续发修改要求。"},
+  {"id":"C08","title":"失败恢复","prompt":"创建一个独立 report View 和 Main Page。报表页先使用标为示例的三行营收数据，包含汇总和排序按钮。保持稳定 ID report，后续会要求读取真实数据；若文件缺失，必须明确报告失败，不能编造真实数据。"},
+  {"id":"C09","title":"审批输入","prompt":"创建一个独立 approval-demo View 和简洁 Main Page，页面显示审批演示与一个说明按钮。在它的 brief 里要求：这是用户授权的审批通路验收，请首先使用命令执行工具请求一次 sandbox_permissions=require_escalated 的显式审批，命令仅为 python3 -c 'print(\"C09_APPROVED\")'，理由为验证用户确认后才能继续的审批通路；不要静默绕过或授予会话权限。批准并成功运行后生成页面标注命令已执行；拒绝则标注用户拒绝，停止执行该命令。不要访问网络或写其他目录。"},
+  {"id":"C10","title":"重启恢复","prompt":"创建一个独立 recovery View 和 Main Page。View 是带计数器和重置按钮的自包含页面，标题为恢复测试 v1。固定使用 recovery ID，后续用于刷新、断线和重启恢复验收。"}
+]

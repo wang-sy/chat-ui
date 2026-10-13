@@ -1,4 +1,5 @@
-use crate::runtime::{display_path, home_dir, Runtime};
+use crate::runtime::{home_dir, Runtime};
+use crate::{directories, event_stream};
 use serde_json::{json, Value};
 use std::io::{Read, Write};
 use std::net::{TcpStream, ToSocketAddrs};
@@ -80,40 +81,6 @@ fn serve_page(request: Request, path: &str) {
     let _ = request.respond(response);
 }
 
-pub fn directories(path: Option<&str>) -> Result<Value, String> {
-    let initial = path.map(PathBuf::from).unwrap_or_else(home_dir);
-    let path = std::fs::canonicalize(initial).map_err(|_| "目录不存在或无法读取")?;
-    if !path.is_dir() {
-        return Err("请选择文件夹".into());
-    }
-    let mut children = vec![];
-    for entry in std::fs::read_dir(&path)
-        .map_err(|_| "无法读取目录")?
-        .flatten()
-    {
-        if entry.path().is_dir() {
-            let name = entry.file_name().to_string_lossy().into_owned();
-            if !name.starts_with('.') {
-                children.push(json!({"name":name,"path":display_path(&entry.path())}));
-            }
-        }
-    }
-    children.sort_by_key(|value| value["name"].as_str().unwrap_or("").to_lowercase());
-    let mut roots = vec![json!({"name":"个人目录","path":home_dir()})];
-    #[cfg(windows)]
-    for drive in 'A'..='Z' {
-        let root = format!("{drive}:\\");
-        if Path::new(&root).is_dir() {
-            roots.push(json!({"name":root,"path":root}));
-        }
-    }
-    #[cfg(not(windows))]
-    roots.push(json!({"name":"根目录","path":"/"}));
-    Ok(
-        json!({"path":display_path(&path),"parent":path.parent().map(display_path),"children":children,"roots":roots}),
-    )
-}
-
 fn handle(mut request: Request, runtime: Arc<Runtime>, token: &str, port: u16) {
     let origin = request
         .headers()
@@ -182,13 +149,25 @@ fn handle(mut request: Request, runtime: Arc<Runtime>, token: &str, port: u16) {
         );
         return;
     }
-    if request
-        .headers()
-        .iter()
-        .find(|h| h.field.equiv("X-Chat-UI-Token"))
-        .map(|h| h.value.as_str())
-        != Some(token)
-    {
+    let query_token = url
+        .query_pairs()
+        .find(|(key, _)| key == "token")
+        .map(|(_, value)| value.into_owned());
+    let supplied_token = if path == "/api/events" {
+        request
+            .headers()
+            .iter()
+            .find(|h| h.field.equiv("X-Chat-UI-Token"))
+            .map(|h| h.value.to_string())
+            .or(query_token.as_deref().map(str::to_owned))
+    } else {
+        request
+            .headers()
+            .iter()
+            .find(|h| h.field.equiv("X-Chat-UI-Token"))
+            .map(|h| h.value.to_string())
+    };
+    if supplied_token.as_deref() != Some(token) {
         json_response(
             request,
             401,
@@ -197,14 +176,38 @@ fn handle(mut request: Request, runtime: Arc<Runtime>, token: &str, port: u16) {
         );
         return;
     }
+    if request.method() == &Method::Get && path == "/api/events" {
+        let last_event_id = request
+            .headers()
+            .iter()
+            .find(|h| h.field.equiv("Last-Event-ID"))
+            .and_then(|h| h.value.as_str().parse::<u64>().ok());
+        let cursor = last_event_id
+            .or_else(|| {
+                url.query_pairs()
+                    .find(|(key, _)| key == "since")
+                    .and_then(|(_, value)| value.parse::<u64>().ok())
+            })
+            .unwrap_or_else(|| runtime.current_event_sequence())
+            .min(runtime.current_event_sequence());
+        event_stream::respond(request, runtime, cursor, origin.as_deref());
+        return;
+    }
     if request.method() == &Method::Get {
         let result = match path {
             "/api/state" => Ok(runtime.snapshot()),
-            "/api/directories" => directories(
+            "/api/directories" => directories::list(
                 url.query_pairs()
                     .find(|(k, _)| k == "path")
                     .as_ref()
                     .map(|(_, v)| v.as_ref()),
+            ),
+            "/api/space" => runtime.space(
+                url.query_pairs()
+                    .find(|(k, _)| k == "cwd")
+                    .as_ref()
+                    .map(|(_, v)| v.as_ref())
+                    .unwrap_or(""),
             ),
             _ => {
                 json_response(
@@ -255,9 +258,15 @@ fn handle(mut request: Request, runtime: Arc<Runtime>, token: &str, port: u16) {
         }
     };
     let result = match path {
+        "/api/directories" => directories::create(
+            body["parent"].as_str().unwrap_or(""),
+            body["name"].as_str().unwrap_or(""),
+        ),
         "/api/connect" => runtime.connect().map(|_| runtime.snapshot()),
         "/api/projects" => runtime.add_project(body["path"].as_str().unwrap_or("")),
         "/api/chats/send" => runtime.send(&body),
+        "/api/chats/steer" => runtime.steer(&body),
+        "/api/space" => runtime.mutate_space(&body),
         "/api/chats/open" => runtime.open_chat(body["id"].as_str().unwrap_or("")),
         "/api/chats/interrupt" => runtime.interrupt(body["id"].as_str().unwrap_or("")),
         "/api/requests/reply" => runtime.reply(&body),

@@ -23,3 +23,9 @@ Thumbs.db
 coverage/
 **/.space/
 
+# Retained local acceptance Spaces, model output, and screenshots.
+/live-agent-cases/
+**/__pycache__/
+/prototype/design-qa-*.png
+/prototype/design-qa-*.jpg
+

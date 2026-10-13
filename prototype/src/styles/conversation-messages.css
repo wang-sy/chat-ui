@@ -1,0 +1,117 @@
+.conversation-scroll {
+  overflow: auto;
+  flex: 1;
+  padding: 17px 15px 28px;
+}
+
+.approval-card {
+  padding: 12px;
+  border: 1px solid #f0cbbb;
+  background: #fffaf7;
+  border-radius: 11px;
+  margin: 13px 0;
+}
+
+.approval-card-heading {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+}
+
+.approval-icon {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 7px;
+  color: #e7784b;
+  background: #fff0e8;
+}
+
+.approval-card-heading strong,
+.approval-card-heading small {
+  display: block;
+}
+
+.approval-card-heading strong {
+  font-size: 12px;
+}
+
+.approval-card-heading small {
+  margin-top: 3px;
+  color: #999fa5;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.approval-command,
+.approval-path {
+  display: block;
+  margin: 10px 0;
+  padding: 7px;
+  background: #fff0e8;
+  border-radius: 6px;
+  color: #99583f;
+  font-size: 10px;
+  overflow: auto;
+}
+
+.approval-question {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 10px 0;
+  color: #6f767e;
+  font-size: 11px;
+}
+
+.approval-question input {
+  width: 100%;
+  padding: 7px 8px;
+  border: 1px solid #ead8cf;
+  border-radius: 7px;
+  outline: none;
+  color: #373c42;
+  background: #fff;
+  font-size: 12px;
+}
+
+.approval-question input:focus {
+  border-color: #e7784b;
+  box-shadow: 0 0 0 2px #e7784b22;
+}
+
+.approval-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.approval-actions button {
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  background: #f1f2f3;
+}
+
+.approval-actions .approval-primary {
+  background: #e8774a;
+  color: #fff;
+}
+
+.thread-error {
+  padding: 9px;
+  color: #a45646;
+  background: #fff3ef;
+  border-radius: 7px;
+  font-size: 11px;
+}
+
+.conversation-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  padding: 17px 18px 23px;
+  background: #fff;
+  border-bottom: 1px solid #edf0f2;
+}

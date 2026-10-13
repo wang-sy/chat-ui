@@ -1,0 +1,12 @@
+[
+  {"id":"C01","kind":"direct-answer","main":"plan:null","view":"none","invariant":"no view is created"},
+  {"id":"C02","kind":"compose","main":"create or reuse main page and two stable views","view":"two isolated runnable pages","invariant":"each view owns one thread"},
+  {"id":"C03","kind":"refine","main":"reuse one view id","view":"preserve existing behavior and add requested interaction","invariant":"unmentioned views are unchanged"},
+  {"id":"C04","kind":"event-route","main":"route a bounded view event","view":"postMessage with no token","invariant":"event reaches its owner"},
+  {"id":"C05","kind":"remove","main":"explicit removeViews and complete edge snapshot","view":"does not edit composition","invariant":"removed view cannot keep an active turn"},
+  {"id":"C06","kind":"parallel-build","main":"track children independently","view":"publish independent lifecycle states","invariant":"one slow child does not block ready siblings"},
+  {"id":"C07","kind":"interrupt","main":"deduplicate, stop turns and resume ordered queued messages","view":"discard stale completion","invariant":"newer intent wins without losing the queue"},
+  {"id":"C08","kind":"failure","main":"retain old page and expose retry","view":"error for invalid or incomplete output","invariant":"empty html is never ready"},
+  {"id":"C09","kind":"approval","main":"keep request on owning thread","view":"resume after answer","invariant":"no silent permission escalation"},
+  {"id":"C10","kind":"recovery","main":"reconstruct ownership from Space","view":"resume existing thread","invariant":"restart is idempotent"}
+]

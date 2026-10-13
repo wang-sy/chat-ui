@@ -9,7 +9,7 @@
     "bridge": "node scripts/service.mjs",
     "build": "tsc --noEmit && vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
-    "test": "node --test tests/bridge.test.mjs tests/sites-worker.test.mjs",
+    "test": "node --test tests/bridge.test.mjs tests/sites-worker.test.mjs tests/agent-cases.test.mjs tests/agent-cases.behavior.test.mjs tests/page-surface.test.mjs tests/structure.test.mjs tests/model-settings.test.mjs tests/composition.test.mjs tests/embed-runtime.test.mjs tests/conversation-history.test.mjs",
     "test:bridge": "node --test tests/bridge.test.mjs",
     "test:codex": "node --test tests/codex.integration.mjs",
     "test:sites": "node --test tests/sites-worker.test.mjs",
@@ -27,6 +27,7 @@
     "@tauri-apps/cli": "2.12.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "linkedom": "^0.18.13",
     "typescript": "^7.0.2"
   }
 }

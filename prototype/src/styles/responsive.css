@@ -1,0 +1,27 @@
+@media (max-width: 1100px) {
+  .workspace-sidebar {
+    width: 248px;
+  }
+  .composer-wrap {
+    width: calc(100% - 34px);
+  }
+  .conversation-dock {
+    width: calc(100% - 24px);
+    bottom: 12px;
+  }
+  .page-running-layer {
+    bottom: 169px;
+    width: calc(100% - 24px);
+  }
+
+  .page-running-layer.is-dock-open {
+    bottom: calc(min(530px, 100% - 24px) + 20px);
+  }
+
+  .conversation-dock.is-expanded {
+    height: min(530px, calc(100% - 24px));
+  }
+  .conversation-heading > strong {
+    max-width: 280px;
+  }
+}

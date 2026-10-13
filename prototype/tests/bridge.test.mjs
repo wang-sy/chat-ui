@@ -51,11 +51,11 @@ test("browser bridge sends directory, connection, and message requests", async (
   await bridge.directories("C:/My Project");
   await bridge.connect();
   await bridge.addProject("C:/work");
-  await bridge.send({ threadId: "thread-1", cwd: "C:/work", model: "gpt-6.1", effort: "high", text: "你好", requestId: "message-1" });
+  await bridge.send({ threadId: "thread-1", cwd: "C:/work", model: "gpt-6.1", effort: "high", speed: "fast", permission: "auto", text: "你好", requestId: "message-1" });
 
   assert.equal(calls[1].url, "http://127.0.0.1:4317/api/directories?path=C%3A%2FMy%20Project");
   assert.deepEqual(JSON.parse(calls[2].options.body), {});
-  assert.deepEqual(JSON.parse(calls[4].options.body), { threadId: "thread-1", cwd: "C:/work", model: "gpt-6.1", effort: "high", text: "你好", requestId: "message-1" });
+  assert.deepEqual(JSON.parse(calls[4].options.body), { threadId: "thread-1", cwd: "C:/work", model: "gpt-6.1", effort: "high", speed: "fast", permission: "auto", text: "你好", requestId: "message-1" });
 });
 
 test("browser bridge refreshes its token once after a stale service token", async () => {
@@ -80,4 +80,35 @@ test("browser bridge reports local service errors", async () => {
     : jsonResponse({ error: "Codex 请求失败" }, 400);
   const bridge = await loadBridge();
   await assert.rejects(bridge.addProject("C:/missing"), /Codex 请求失败/);
+});
+
+test("browser bridge applies sequenced SSE snapshots", async () => {
+  globalThis.fetch = async (url) => String(url).endsWith("/health")
+    ? jsonResponse({ service: "chat-ui", protocol: 1, token: "token" })
+    : jsonResponse({});
+  const events = [];
+  class FakeEventSource {
+    static instance;
+    onmessage;
+    onerror;
+    constructor(url) {
+      this.url = url;
+      FakeEventSource.instance = this;
+    }
+    close() {}
+  }
+  globalThis.EventSource = FakeEventSource;
+  const bridge = await loadBridge();
+  const close = await bridge.subscribeEvents((event) => events.push(event));
+  FakeEventSource.instance.onmessage({
+    data: JSON.stringify({
+      sequence: 7,
+      method: "chat-ui/chat/messageAccepted",
+      params: { threadId: "thread-1" },
+      state: { connected: true },
+    }),
+  });
+  assert.equal(events.length, 1);
+  assert.equal(events[0].sequence, 7);
+  close();
 });

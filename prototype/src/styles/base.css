@@ -1,0 +1,137 @@
+@font-face {
+  font-family: OpenAI;
+  src: url("../assets/codex/OpenAISans-Regular-c56711d328c4.woff2")
+    format("woff2");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: OpenAI;
+  src: url("../assets/codex/OpenAISans-Medium-7b9c963f9063.woff2")
+    format("woff2");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: OpenAI;
+  src: url("../assets/codex/OpenAISans-Semibold-e259229c5327.woff2")
+    format("woff2");
+  font-weight: 600;
+}
+
+:root {
+  font-family:
+    OpenAI,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  color: #202124;
+  background: #f6f7f8;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --sidebar-width: 264px;
+  --sidebar-header-height: 48px;
+  --dock-width: 720px;
+  --dock-radius: 16px;
+  --control-radius: 15px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 0;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #f5f6f7;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.app-frame {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f6f7f8;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.workspace-main {
+  min-width: 0;
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.service-banner {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 11px 8px 13px;
+  color: #8e4e43;
+  background: #fff4f0;
+  border: 1px solid #f3c9bc;
+  border-radius: 8px;
+  box-shadow: 0 7px 22px #2221;
+  font-size: 12px;
+}
+
+.service-banner button {
+  display: grid;
+  place-items: center;
+  color: #ad6a5d;
+}
+
+.workspace-content {
+  min-height: 0;
+  flex: 1;
+  position: relative;
+}
+
+.default-model {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 8px 7px;
+}
+
+.default-model strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.default-model span {
+  font-size: 12px;
+  color: #9a9fa5;
+}

@@ -1,0 +1,376 @@
+.model-trigger {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  border-radius: 10px;
+  color: #363b41;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.model-trigger:hover {
+  background: #f1f2f3;
+}
+
+.model-trigger button {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.model-trigger-speed {
+  padding: 0 4px;
+  color: #202124;
+}
+
+.model-trigger button:active {
+  transform: scale(0.96);
+}
+
+.model-trigger-speed:hover,
+.model-trigger-model:hover,
+.model-trigger-effort:hover {
+  color: #1f6dcc;
+}
+
+.model-trigger-model {
+  padding: 0 2px;
+  max-width: 155px;
+  overflow: hidden;
+}
+
+.model-trigger-model span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.model-trigger-effort {
+  gap: 4px;
+  padding: 0 3px;
+  color: #6a7077;
+}
+
+.model-picker {
+  position: relative;
+}
+
+.model-control-popover {
+  position: absolute;
+  right: -7px;
+  bottom: 40px;
+  width: 282px;
+  padding: 11px 12px 10px;
+  background: #fff;
+  border: 1px solid #d9dcdf;
+  border-radius: var(--control-radius);
+  box-shadow: 0 14px 32px #20212422;
+  z-index: 22;
+  color: #363b41;
+  transform-origin: bottom right;
+  animation: control-popover-in 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.model-control-popover.is-models,
+.model-control-popover.is-speed {
+  width: 286px;
+  padding: 10px 7px 8px;
+}
+
+.model-main-panel,
+.model-list-panel,
+.speed-list-panel {
+  animation: control-panel-in 0.16s ease-out both;
+}
+
+.model-control-header {
+  display: grid;
+  grid-template-columns: 30px 1fr 30px;
+  align-items: start;
+  min-height: 50px;
+}
+
+.control-speed-button,
+.control-reset-button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  color: #3f87ed;
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.control-speed-button:hover,
+.control-reset-button:hover {
+  background: #f1f5fb;
+}
+
+.control-speed-button:active,
+.control-reset-button:active {
+  transform: scale(0.92);
+}
+
+.control-reset-button {
+  color: #858c93;
+}
+
+.control-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.control-summary > strong {
+  color: #3f87ed;
+  font-size: 21px;
+  line-height: 1;
+  font-weight: 500;
+}
+
+.control-model-link {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #6d747b;
+  font-size: 14px;
+  line-height: 1.1;
+}
+
+.control-model-link:hover {
+  color: #347fe5;
+}
+
+.control-model-link:active {
+  transform: scale(0.985);
+}
+
+.effort-control {
+  padding: 7px 3px 0;
+}
+
+.effort-track {
+  height: 20px;
+  position: relative;
+  border-radius: 13px;
+  background: #e6e7e9;
+  overflow: visible;
+  cursor: grab;
+  touch-action: none;
+  outline: none;
+}
+
+.effort-track:active {
+  cursor: grabbing;
+}
+
+.effort-track:focus-visible {
+  box-shadow: 0 0 0 3px #4389ed33;
+}
+
+.model-control-popover.is-dragging .effort-thumb {
+  transition: none;
+}
+
+.effort-track-fill {
+  position: absolute;
+  height: 20px;
+  top: 0;
+  left: 0;
+  border-radius: 13px;
+  background: #4389ed;
+}
+
+.effort-track i {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #d0e1fd;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.effort-thumb {
+  position: absolute;
+  top: -5px;
+  transition: left 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #dfe2e6;
+  box-shadow: 0 2px 5px #20212418;
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.effort-values {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 8px 0 0;
+  color: #70757c;
+  font-size: 10px;
+}
+
+.effort-values button {
+  min-width: 0;
+  color: inherit;
+}
+
+.effort-values button:hover {
+  color: #1f6dcc;
+}
+
+.effort-values button.is-current {
+  color: #1f6dcc;
+}
+
+.effort-description {
+  margin: 8px 0 0;
+  text-align: center;
+  color: #70757c;
+  font-size: 11px;
+}
+
+.model-panel-heading {
+  display: grid;
+  grid-template-columns: 25px 1fr 25px;
+  align-items: center;
+  padding: 1px 2px 5px;
+}
+
+.model-panel-heading h3 {
+  margin: 0;
+  color: #70777d;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.model-panel-heading button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  color: #858c93;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.model-panel-heading button {
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.model-panel-heading button:hover {
+  background: #f1f2f3;
+}
+
+.model-panel-heading button:active {
+  transform: scale(0.92);
+}
+
+.model-option-list,
+.speed-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.model-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 8px;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 13.5px;
+}
+
+.model-option {
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.model-option:hover,
+.model-option.is-current {
+  background: #f1f2f3;
+}
+
+.model-option:active {
+  transform: scale(0.985);
+}
+
+.model-option.is-current svg,
+.speed-option.is-current svg {
+  color: #4f555b;
+}
+
+.speed-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  padding: 7px 8px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.speed-option {
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.speed-option:hover,
+.speed-option.is-current {
+  background: #f1f2f3;
+}
+
+.speed-option:active {
+  transform: scale(0.985);
+}
+
+.speed-option-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.speed-option-copy strong {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.speed-option-copy small {
+  color: #626a72;
+  font-size: 11.5px;
+  line-height: 1.3;
+}
+
+.speed-option.is-current .speed-option-copy strong {
+  color: #1f6dcc;
+}
+
+.speed-option.is-current .speed-option-copy small {
+  color: #626a72;
+}

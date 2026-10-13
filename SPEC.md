@@ -10,7 +10,9 @@ Chat UI 是一个建立在 Codex 执行能力之上的可视化工作空间。
 
 用户不再面对一条不断增长的 chatbot 消息流，而是和一个 Main Thread 共同维护一个会持续变化的网页空间。Main Thread 负责理解用户意图、调度其他 Thread，并根据当前任务动态生成最合适的交互形态。
 
-每个子 Thread 的交付物不是一段文字，而是一个可以运行的网页 View。Main Thread 可以把这些 View 折叠、展开、移动、放大、连接、组合或重新组织。
+每个子 Thread 交付适合任务的交互式可视化。架构、流程和关系类任务优先使用 SVG 图；HTML 是隔离运行的载体，不要求结果长成介绍网页。Main Thread 负责把真实的子 View 内嵌进主页面，并展示它们之间的数据流、依赖、证据和反馈关系。
+
+主、子 Thread 都默认先考虑图形表达，不依赖用户说出“画图”或“SVG”。“总览、工作台、页面”只说明承载位置：理解关系用结构图，理解先后用时序/流程，理解变化用状态图，理解数量用图表，方案对照用同尺度比较。确实需要录入、编辑和操作时保留表单或编辑器；一句话能回答的问题不额外创建 View。
 
 > Codex 负责理解和执行，Main Thread 负责组织空间，View 负责让工作变得可见。
 
@@ -30,7 +32,7 @@ Chat UI Runtime
 - 一个 Chat UI 只有一个 Main Thread；
 - 一个 View 默认只由一个 View Thread 负责；
 - Main Thread 可以创建、调度、暂停、恢复和关闭 View Thread；
-- Main Thread 管理所有 View 的布局、关系和显示状态；
+- Main Thread 管理 View 注册表、关系、版本和显示状态；
 - View Thread 管理自己的网页内容、局部状态和局部交互；
 - 用户默认和 Main Thread 交流，通过主页面影响 View Thread；
 - 用户可以在需要时进入某个 View 的局部上下文。
@@ -61,7 +63,7 @@ Main Thread 是人与系统交流的主要入口，也是全局协调者。
 - 给 View Thread 分配范围明确的任务；
 - 读取各个 View 的状态和结果；
 - 生成和修改主页面；
-- 调整 View 的位置、大小、层级和关系；
+- 管理 View 的版本、关系和生命周期；
 - 在关键节点向用户请求判断；
 - 将用户在主页面上的操作路由给正确的 Thread。
 
@@ -110,13 +112,13 @@ iframe 是第一版的隔离和承载方式。更本质的概念是“由 Thread
 
 ### 3.5 Main Page
 
-Main Page 由 Main Thread 管理。它不是一个预先固定的页面模板，而是根据用户当前的目标和交互不断变化的网页。
+Main Page 由 Main Thread 管理，默认职责是把 Space 内所有保留的 View 以真实 iframe 组合展示。宿主只加载内容，不强制添加标题栏、边框、状态或折叠外壳。Main 自主设计布局、顺序、对照、关系和交互；默认直接展示结果，需要折叠时自行实现并保留页面状态，不应另做一个只有导航入口的网站。
 
 Main Thread 可以让 Main Page 呈现为：
 
-- 多个 View 的画布；
-- 左右对照空间；
-- 流程和证据的关系图；
+- 多个 View 内容直接内嵌的结果总览；
+- 左右对照页面；
+- 流程和证据的页面化呈现；
 - 任务和代码的组合工作台；
 - 一个需要用户逐步操作的界面；
 - 任何能更贴切地表达当前任务的形态。
@@ -134,7 +136,7 @@ View Thread 读取上下文并生成 / 修改 View
     ↓
 View 报告状态和变化
     ↓
-Main Thread 重新组织 Main Page
+Main Thread 更新 Main Page 和 View 注册表
     ↓
 用户通过页面观察、选择和操作
     ↓
@@ -151,16 +153,18 @@ Main Thread 重新组织 Main Page
 - 哪些地方需要用户判断；
 - 当前操作会影响哪个 Thread。
 
+### 4.1 运行中的对话队列
+
+Thread 执行期间，输入框仍然保持可用。用户继续发送的消息进入对应 Main 或 View Thread 的有序队列，当前 turn 结束后自动按顺序发送；队列保存每条消息发送时的模型、推理强度、速度和权限快照，并在刷新后恢复。队列中的消息支持引导回输入框、编辑、删除和拖动或键盘排序。停止当前 turn 不会丢弃队列，线程恢复空闲后继续处理。
+
 ## 5. 权限和所有权
 
 ### Main Thread 可以做的事
 
 - 创建和销毁 View；
 - 加载和卸载 View；
-- 移动、缩放、折叠和展开 View；
-- 调整 View 的层级和布局；
-- 在 View 之间建立连接；
-- 聚焦或隐藏某个 View；
+- 管理 View 的版本、关系和生命周期；
+- 聚焦某个 View Thread 并切换其页面；
 - 请求 View Thread 更新自己的内容；
 - 生成新的主页面交互。
 
@@ -170,7 +174,7 @@ Main Thread 重新组织 Main Page
 - 报告自己的工作状态；
 - 请求用户或 Main Thread 的判断；
 - 提交文件、图表、代码或其他产出物；
-- 请求 Main Page 聚焦自己的 View；
+- 请求用户打开自己的 View Thread；
 - 提议和其他 View 建立关系。
 
 ### View Thread 不应该做的事
@@ -226,7 +230,7 @@ evidence      修改依据来自哪里
 3. **每个视觉状态都应该可以追溯到 Thread、文件、事件或决定。**
 4. **View 的内部实现可以复杂，Chat UI 的全局交互必须保持简单。**
 5. **用户通过观察和操作空间推进工作，不需要逐条阅读模型输出。**
-6. **所有重要变化都应当可比较、可确认、可撤销。**
+6. **所有重要变化都应当可比较、可确认，并保留清晰的版本边界。**
 7. **iframe 是实现手段，网页 View 才是产品对象。**
 
 ## 9. 非目标
@@ -247,18 +251,17 @@ evidence      修改依据来自哪里
 
 - 一个 Chat UI；
 - 一个 Main Thread；
-- 一个由 Main Thread 管理的主画板；
+- 一个由 Main Thread 管理的主页面；
 - 三个 View Thread；
 - 三个独立网页 View：系统架构、支付流程、调用时序；
-- View 可以被移动、折叠、展开和聚焦；
-- Main Thread 可以在 View 之间绘制连接；
+- 用户可以从 Space 树进入任意 View Thread 页面；
 - 底部只有一个向 Main Thread 输入意图的入口；
 - 视觉原型使用真实的本机 Codex 连接状态；View 编排和网页产出仍按后续阶段逐步接入。
 
 ## 11. 需要继续决定的问题
 
 - Main Page 允许由 Main Thread 自由重写，Chat UI Runtime 只保留一个极薄的运行时壳；
-- View 的布局是否完全自由，还是保留少量可预测的布局约束；
+- View 之间的关系元数据是否需要继续对用户可见；
 - 用户是否可以直接对某个 View Thread 输入；
 - View 是否可以在不创建 Thread 的情况下存在；
 - iframe 之外是否需要支持同源页面或 Web Component；
@@ -287,8 +290,8 @@ Tauri 2
 - 一个本地服务只管理一个 Codex app-server 子进程。浏览器和 Tauri UI 连接同一个服务，因此看到同一组项目、聊天和活动状态；
 - Tauri 启动时自动拉起服务；浏览器开发命令 `pnpm dev` 在需要时拉起同一个服务。关闭 UI 时只结束由当前开发进程启动的服务；
 - 项目清单保存在用户目录的 `.chat-ui/projects.json`，每个项目的聊天状态保存在项目内 `.space/chat-ui.json`，便于透明查看和 Git 管理；
-- 宿主只提供目录选择、线程生命周期、权限请求和受控 Bridge，不把 Main Page 固定成 dashboard；
-- View 编排协议保留在产品层，当前版本先把 Main Thread 的共享本地线程和 Codex 风格聊天入口跑通。
+- 宿主只提供目录选择、线程生命周期、权限请求和受控 Bridge，不把 Main Page 固定成 dashboard，也不渲染额外的节点画布；
+- Main Thread 和 View Thread 已通过结构化 turn 输出接入编排协议：Main Thread 返回完整的 Space plan（`mainPage`、`views`、`connections`、显式的 `removeViews`），运行时创建或复用 View Thread；View Thread 返回受限的页面结果，运行时只更新自己的 View。主页面和 View 页面分别落在 `.space/main/` 与 `.space/views/<view-id>/`，并继续由 Space 注册表统一管理。
 
 ## 13. 本地线程与服务协议
 
@@ -298,11 +301,31 @@ Tauri 2
 | --- | --- |
 | `GET /api/state` | 返回连接状态、模型、项目、聊天和活动请求 |
 | `POST /api/connect` | 自动发现 PATH 中的 Codex 并启动 app-server |
+| `GET /api/events` | 带序号的 SSE 事件流，转发 Codex 生命周期、文本增量、计划、工具和审批状态 |
 | `GET /api/directories` | 浏览本机目录，供 landing page 选择项目 |
 | `POST /api/projects` | 添加或选中项目目录 |
 | `POST /api/chats/send` | 创建或恢复线程并开始一轮 Codex turn |
+| `POST /api/chats/steer` | 使用 `turn/steer` 向活动 turn 追加一条消息 |
 | `POST /api/chats/open` | 恢复已有线程和消息 |
 | `POST /api/chats/interrupt` | 中断正在运行的 turn |
 | `POST /api/requests/reply` | 回复 Codex 的权限确认或用户输入请求 |
 
-线程生命周期为：选择目录 → 首次发送时调用 `thread/start` → 后续消息复用同一个 `threadId` → 服务转发 app-server 的增量消息和请求 → UI 轮询共享状态。Tauri 和浏览器不会各自创建 Codex 线程，也不会复制一套独立的对话状态。
+线程生命周期为：选择目录 → 首次发送时调用 `thread/start` → 后续消息复用同一个 `threadId` → 服务转发 app-server 的增量消息和请求 → 运行中发送进入队列，明确点击引导时调用 `turn/steer` → SSE 事件流同步共享状态。Tauri 和浏览器共享 Codex 线程状态，轮询仅作为状态同步兜底，不能覆盖更新的流式事件。
+
+展开每个 Main / View Thread 的对话框时，展示该线程的历史消息及执行记录。回复、公开思考摘要、命令输出、工具进度和计划随事件累积更新；完成后仍可展开检查，刷新后恢复。结构化结果只展示面向用户的 `response`，页面 HTML 与内部编排提示不进入对话。折叠后保留紧凑输入框与运行状态条；查看旧消息时新输出不能强制抢走滚动位置。
+
+## 14. 图式交付与结果组合
+
+- Main Page 是完整的可视化结果，不能只列卡片、标题和跳转链接。Main 负责展示整体结构、关系方向和关系含义；子 View 负责局部图和交互。
+- Main 为所有保留和新建的 View 使用 `<chat-view view-id="architecture"></chat-view>` 声明嵌入位置，每个 View 出现一次，默认直接展示。引用可用真实 View ID 或持久化的语义 key。宿主只提供无边框的真实子页面、自动高度、独立更新及事件路由，不添加标题栏、“已就绪”、折叠和跳转控件。Main 自主设计排版、标题、样式和按需折叠，不复制、伪造或重写子 View 的内部 HTML，也不以目录取代真实结果。
+- 每块 iframe 默认按实际内容调整高度，Main 可通过 CSS 或 `--chat-view-height` 指定适合场景的视口；长页面可滚动浏览。Main 自行提供折叠时保留 iframe 和交互状态，宿主不强制展开或覆盖布局。旧 Main 页面或局部计划遗漏 View 时，组合运行时补齐真实内嵌，不移动、折叠或改写既有主页面内容。
+- 子 View 独立加载、失败、重试和更新；一个 View 更新不应重新加载其他已挂载 View。生成中的 View 显示真实状态，不能显示伪造完成内容。
+- `connections` 保存带方向和语义标签的关系；Main 同时用 SVG、流程图或对照结构把这些关系呈现出来。子结果返回后，Main 进行一次受限的整合，依据实际摘要补充结论，不重复分派子任务。
+- 架构、流程、依赖和时序任务以可读 SVG 为主，展示节点、连线、箭头和标签；节点选择提供局部说明。指标任务以图表及必要数据为主。避免大标题、营销文案和只有文字的卡片墙。
+- 页面内普通选择和联动不启动 Agent。子 View 可发出 `selection` 事件，携带共同的 `entityId`；宿主组合层向同一 Main Page 的其他 View 转发上下文。明确需要 Agent 改动时才使用带 `intent` 的 action。
+- Main 可用原生 `<details>` 或自定义可访问控件实现按需折叠；单独打开 View 也是可选的，由 Main 使用 `data-chat-open-view` 或已知 View 的导航链接声明。宿主不强制提供这些按钮，未知链接不会猜测或打开其他 Space。
+- 每个 iframe 保持脚本/表单沙箱，不获得本地服务 token、文件访问权限或其他 View 的 DOM。
+
+验收：推荐系统 Main Page 同时显示架构图和指标图，并标注推荐→曝光/点击→指标→优化反馈；点击架构节点可看到解释，并联动指标关注状态；修改指标 View 后，主页面嵌入内容更新，架构图的局部选择保持。整合阶段不会创建重复 View 或触发无限重跑。
+
+选型验收另用 10 个只描述用户目标的真实场景，预期形式不提供给 Agent。检查 Main 的任务分配、View 的实际图形语义、嵌入后的可读性和交互，不能以出现 `<svg>` 或生成成功代替效果验收。包含录入表单和简短问答两个对照场景，避免机械地把所有请求变成图。

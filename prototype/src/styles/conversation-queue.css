@@ -1,0 +1,249 @@
+.conversation-queue {
+  padding: 10px 0 4px;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.conversation-queue-heading {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 2px 5px;
+  color: #6f767d;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.conversation-queue-heading > span:nth-child(2) {
+  min-width: 16px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  color: #537fc1;
+  background: #edf4ff;
+  text-align: center;
+}
+
+.conversation-queue-hint {
+  margin-left: auto;
+  color: #a2a8ae;
+  font-weight: 400;
+}
+
+.conversation-queue-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.queued-message {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 0;
+  border-top: 1px solid #f2f3f4;
+  transition:
+    opacity 0.16s ease,
+    background 0.16s ease;
+}
+
+.queued-message.is-dragging {
+  opacity: 0.42;
+}
+
+.queue-drag-handle {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 25px;
+  flex: none;
+  color: #b1b6bb;
+  border-radius: 5px;
+  cursor: grab;
+}
+
+.queue-drag-handle:hover,
+.queue-drag-handle:focus-visible {
+  color: #69727b;
+  background: #f1f3f4;
+}
+
+.queue-drag-handle:active {
+  cursor: grabbing;
+}
+
+.queued-message-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.queued-message-text {
+  display: -webkit-box;
+  max-height: 3.95em;
+  margin: 1px 0 3px;
+  overflow: hidden;
+  color: #3e444a;
+  font-size: 12px;
+  line-height: 1.32;
+  white-space: pre-wrap;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.queue-message-meta {
+  margin: 0;
+  color: #a0a6ac;
+  font-size: 10px;
+}
+
+.queue-message-actions {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  flex: none;
+  padding-top: 1px;
+}
+
+.queue-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 24px;
+  height: 25px;
+  padding: 0 4px;
+  color: #939aa1;
+  border-radius: 6px;
+  font-size: 10px;
+}
+
+.queue-action:hover,
+.queue-action:focus-visible {
+  color: #4e5963;
+  background: #f1f3f4;
+}
+
+.queue-guide {
+  color: #7f8992;
+}
+
+.queue-more-wrap {
+  position: relative;
+}
+
+.queue-more-menu {
+  position: absolute;
+  z-index: 30;
+  top: 28px;
+  right: 0;
+  display: flex;
+  min-width: 92px;
+  flex-direction: column;
+  padding: 4px;
+  border: 1px solid #e0e3e5;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 9px 25px #20212420;
+}
+
+.queue-more-menu button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 7px 8px;
+  border-radius: 5px;
+  color: #59616a;
+  font-size: 11px;
+  text-align: left;
+}
+
+.queue-more-menu button:hover,
+.queue-more-menu button:focus-visible {
+  background: #f2f3f4;
+}
+
+.queue-edit-area {
+  padding-right: 2px;
+}
+
+.queue-edit-area textarea {
+  width: 100%;
+  min-height: 54px;
+  resize: vertical;
+  padding: 7px 8px;
+  border: 1px solid #d7dce0;
+  border-radius: 7px;
+  outline: 0;
+  color: #343a40;
+  background: #fff;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.queue-edit-area textarea:focus {
+  border-color: #4b89e8;
+  box-shadow: 0 0 0 2px #4b89e822;
+}
+
+.queue-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.queue-edit-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 7px;
+  border-radius: 5px;
+  color: #747c84;
+  font-size: 10px;
+}
+
+.queue-edit-actions button:hover {
+  background: #f1f3f4;
+}
+
+.queue-edit-actions .is-primary {
+  color: #fff;
+  background: #4b89e8;
+}
+
+.queue-edit-actions .is-primary:hover {
+  background: #3e79d4;
+}
+
+.queue-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0 0;
+  color: #b45d40;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.conversation-pending-dot.is-queued {
+  background: #4b89e8;
+  box-shadow: 0 0 0 3px #4b89e81c;
+}
+
+.stop-button {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  margin-left: 2px;
+  border: 1px solid #f0c2b1;
+  border-radius: 50%;
+  color: #d96e4d;
+  background: #fff7f3;
+}
+
+.stop-button:hover {
+  color: #bf5438;
+  background: #ffede7;
+}
